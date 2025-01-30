@@ -2,7 +2,7 @@
   become: yes
   tasks:
 
-    - name: update
+    - name: update cache
       apt: update_cache=yes
 
     - name: Install Nginx
@@ -10,9 +10,10 @@
 
       notify:
         - restart nginx
-    - name: Copy "index.html" to default Nginx location
+
+    - name: Copy Website files to default Nginx Document root
       copy:
-        src: /var/www/html/hello-world/index.html
+        src: ./index.html
         dest: /var/www/html/index.html
         mode: 0644
         remote_src: true
@@ -22,6 +23,7 @@
         src: /etc/nginx/sites-available/default
         path: /etc/nginx/sites-enabled/default
         state: link
+
     - name: Apply nginx Template
       template:
         src: template/index-html.j2
@@ -31,8 +33,6 @@
       service:
         name: nginx
         state: restarted
-
-
 
   handlers:
     - name: restart nginx
