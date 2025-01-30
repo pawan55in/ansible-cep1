@@ -1,0 +1,40 @@
+- hosts: web
+  become: yes
+  tasks:
+
+    - name: update
+      apt: update_cache=yes
+
+    - name: Install Nginx
+      apt: name=nginx state=latest
+
+      notify:
+        - restart nginx
+    - name: Copy "index.html" to default Nginx location
+      copy:
+        src: /var/www/html/hello-world/index.html
+        dest: /var/www/html/index.html
+        mode: 0644
+        remote_src: true
+
+    - name: Enable default Nginx website
+      file:
+        src: /etc/nginx/sites-available/default
+        path: /etc/nginx/sites-enabled/default
+        state: link
+    - name: Apply nginx Template
+      template:
+        src: template/index-html.j2
+        dest: /var/www/html/index.html
+
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
+
+
+
+  handlers:
+    - name: restart nginx
+      service: name=nginx state=reloaded
+
