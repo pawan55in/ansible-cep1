@@ -1,4 +1,7 @@
 - hosts: web
+  vars:
+    first_name: "Pawan"
+    last_name: "Mishra"
   become: yes
   tasks:
 
